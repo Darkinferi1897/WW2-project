@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>WWII Quiz & Ranks</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+    <header>
+        <h1>WWII Knowledge Check</h1>
+        <nav>
+            <ul>
+                <li><a href="index.html">Home</a></li>
+                <li><a href="battles.html">Key Battles</a></li>
+                <li><a href="timeline.html">Timeline</a></li>
+                <li><a href="technology.html">Technology</a></li>
+                <li><a href="quiz.html">Quiz</a></li>
+                <li><a href="gallery.html">Gallery</a></li>
+            </ul>
+        </nav>
+    </header>
+
+    <main>
+
+
+</div>
+
+
+        <div id="quiz-container">
+    <!-- Question 1 -->
+    <div class="question" data-answered="false">
+        <p>1. Which event triggered the start of WWII in 1939?</p>
+        <button onclick="checkAnswer(this, false)">Pearl Harbor</button>
+        <button onclick="checkAnswer(this, true)">Invasion of Poland</button>
+        <button onclick="checkAnswer(this, false)">D-Day</button>
+    </div>
+
+    <!-- Question 2 -->
+    <div class="question" data-answered="false">
+        <p>2. Who was the British Prime Minister for most of the war?</p>
+        <button onclick="checkAnswer(this, true)">Winston Churchill</button>
+        <button onclick="checkAnswer(this, false)">Neville Chamberlain</button>
+        <button onclick="checkAnswer(this, false)">Clement Attlee</button>
+    </div>
+
+    <!-- Question 3 -->
+    <div class="question" data-answered="false">
+        <p>3. What was the code name for the Allied invasion of Normandy?</p>
+        <button onclick="checkAnswer(this, false)">Operation Barbarossa</button>
+        <button onclick="checkAnswer(this, true)">Operation Overlord</button>
+        <button onclick="checkAnswer(this, false)">Operation Torch</button>
+    </div>
+
+    <!-- Question 4 -->
+    <div class="question" data-answered="false">
+        <p>4. Which Japanese cities were targeted by atomic bombs in 1945?</p>
+        <button onclick="checkAnswer(this, false)">Tokyo & Osaka</button>
+        <button onclick="checkAnswer(this, true)">Hiroshima & Nagasaki</button>
+        <button onclick="checkAnswer(this, false)">Kyoto & Nagoya</button>
+    </div>
+
+    <!-- Question 5 -->
+    <div class="question" data-answered="false">
+        <p>5. What was the 'Desert Fox' General Erwin Rommel's primary theater of war?</p>
+        <button onclick="checkAnswer(this, true)">North Africa</button>
+        <button onclick="checkAnswer(this, false)">The Eastern Front</button>
+        <button onclick="checkAnswer(this, false)">The Pacific</button>
+    </div>
+
+    <!-- Question 6 -->
+    <div class="question" data-answered="false">
+        <p>6. Which pact was signed between Germany and the USSR in 1939?</p>
+        <button onclick="checkAnswer(this, false)">The Munich Agreement</button>
+        <button onclick="checkAnswer(this, true)">Molotov-Ribbentrop Pact</button>
+        <button onclick="checkAnswer(this, false)">Tripartite Pact</button>
+    </div>
+
+    <div id="feedback">Score: 0</div>
+    
+    <!-- Ranking Section (Keep this the same as before) -->
+    <div id="rank-input">
+        <input type="text" id="playerName" placeholder="Enter Soldier Name">
+        <button onclick="saveScore()">Submit to Rankings</button>
+    </div>
+</div>
+<!-- This is the missing Table -->
+<div class="leaderboard">
+    <h3>Top Commanders (Local)</h3>
+    <table>
+        <thead>
+            <tr>
+                <th>Rank</th>
+                <th>Name</th>
+                <th>Score</th>
+            </tr>
+        </thead>
+        <tbody id="highScoresBody">
+            <!-- JavaScript will put names here automatically -->
+        </tbody>
+    </table>
+
+    <button id="clearBtn" onclick="clearScores()">Clear Military Records</button>
+
+</div>
+
+    </main>
+
+    <script>
+    let currentScore = 0;
+    let questionsAnswered = 0;
+    const totalQuestions = 6; 
+
+
+   
+
+
+
+function clearScores() {
+    // 1. Wipe the browser memory for this site
+    localStorage.removeItem('wwiiScores');
+    
+    // 2. Immediately update the table so it looks empty
+    displayScores();
+    
+    // 3. Optional: Alert to confirm it worked
+    alert("Records Purged, Commander.");
+}
+
+
+
+
+
+    function checkAnswer(button, isCorrect) {
+        const parent = button.parentElement;
+        
+        // Prevent clicking multiple answers for the same question
+        if (parent.getAttribute('data-answered') === "true") return;
+
+        // Visual feedback
+        if (isCorrect) {
+            currentScore += 10;
+            button.style.backgroundColor = "#28a745"; // Green
+        } else {
+            button.style.backgroundColor = "#dc3545"; // Red
+        }
+
+        // Lock the question
+        parent.setAttribute('data-answered', "true");
+        questionsAnswered++;
+        
+        // Update the score display
+        document.getElementById('feedback').innerHTML = `Score: ${currentScore} | Questions: ${questionsAnswered}/${totalQuestions}`;
+    }
+
+    function saveScore() {
+    const nameField = document.getElementById('playerName');
+    const name = nameField.value.trim() || "Unknown Soldier";
+    
+    // Determine Rank based on score
+    let rankTitle = "Recruit";
+    if (currentScore >= 60) rankTitle = "General";
+    else if (currentScore >= 40) rankTitle = "Major";
+    else if (currentScore >= 20) rankTitle = "Sergeant";
+
+    let highScores = JSON.parse(localStorage.getItem('wwiiScores')) || [];
+    
+    // Save both the name and the rank title
+    highScores.push({ name: `${name} (${rankTitle})`, score: currentScore });
+    
+    highScores.sort((a, b) => b.score - a.score);
+    highScores = highScores.slice(0, 5);
+    
+    localStorage.setItem('wwiiScores', JSON.stringify(highScores));
+    
+    displayScores();
+    nameField.value = "";
+    alert(`Report filed, ${rankTitle}!`);
+}
+
+
+    function displayScores() {
+        const highScores = JSON.parse(localStorage.getItem('wwiiScores')) || [];
+        const body = document.getElementById('highScoresBody');
+        
+        if (highScores.length === 0) {
+            body.innerHTML = "<tr><td colspan='3' style='text-align:center'>No records found.</td></tr>";
+            return;
+        }
+
+        body.innerHTML = highScores.map((s, i) => `
+            <tr>
+                <td>${i + 1}</td>
+                <td>${s.name}</td>
+                <td>${s.score}</td>
+            </tr>
+        `).join('');
+    }
+
+    // Run this immediately when the page opens to show previous scores
+    displayScores();
+</script>
+
+</body>
+</html>
